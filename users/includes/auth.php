@@ -107,3 +107,18 @@ function hasCompanyProfile($userId)
     return true;
 }
 
+function logTable($turul="login", $rd="0", $phone="0", $action="undefined")
+{
+    $database = new Database();
+    $db = $database->connect();
+    $ognoo = date('Y-m-d H:i:s');
+
+    $query = "INSERT INTO logtable (turul, rd, phone, ognoo, action) VALUES (:turul, :rd, :phone, :ognoo, :action)";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':turul', $turul);
+    $stmt->bindParam(':rd', $rd);
+    $stmt->bindParam(':phone', $phone);
+    $stmt->bindParam(':ognoo', $ognoo);
+    $stmt->bindParam(':action', $action);
+    $stmt->execute();
+}

@@ -7,11 +7,12 @@ $error = '';
 $success = '';
 
 // Хэрэв аль хэдийн компанийн мэдээлэл бөглөсөн бол dashboard руу шилжүүлэх
+/*
 if (hasCompanyProfile($userId)) {
     header('Location: dashboard.php');
     exit();
 }
-
+*/
 // Form submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $database = new Database();

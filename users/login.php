@@ -21,10 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Утасны дугаар болон нууц үгээ оруулна уу!';
         } else {
             if (login($phone, $password)) {
+                logTable("login", "rd", $phone, "Login user");
                 header('Location: dashboard.php');
                 exit();
             } else {
                 $error = 'Утасны дугаар эсвэл нууц үг буруу байна!';
+                logTable("login", "rd", $phone, "Incorrect data");
             }
         }
     }
@@ -37,178 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Нэвтрэх / Бүртгүүлэх</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8eaf6 0%, #f5f5f5 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .auth-container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 420px;
-            overflow: hidden;
-        }
-
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 18px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            color: #757575;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .tab:hover {
-            background: #f0f0f0;
-        }
-
-        .tab.active {
-            color: #5c6bc0;
-            background: #ffffff;
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #5c6bc0;
-        }
-
-        .form-container {
-            padding: 40px 35px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #424242;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .required {
-            color: #d32f2f;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d0d0d0;
-            border-radius: 6px;
-            font-size: 15px;
-            color: #424242;
-            background: #fafafa;
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #5c6bc0;
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.1);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #5c6bc0 0%, #7986cb 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            background: linear-gradient(135deg, #4e5bb5 0%, #6a78c1 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(92, 107, 192, 0.3);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            margin-bottom: 0;
-            font-size: 13px;
-            color: #616161;
-            font-weight: 400;
-            cursor: pointer;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-        }
-
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #81c784;
-        }
-    </style>
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
     <div class="auth-container">
+        <div class="head">
+            <img src="images/logo.png" alt="Logo" class="logo" width="100px">
+            <h3>ETUSUL</h3>
+            <label>Барилга, дэд бүтцийн ажил гүйцэтгэгч аж нэгжүүдэд зориулсан систем</label>
+        </div>
+
         <div class="tabs">
             <button class="tab active" onclick="showForm('login')">Нэвтрэх</button>
             <button class="tab" onclick="showForm('register')">Бүртгүүлэх</button>
@@ -247,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             <div class="form-group">
                 <label for="register_check">Байгууллагын регистрийн дугаар <span class="required">*</span></label>
-                <input type="number" id="register_check" name="register_check" placeholder="3755662" required>
+                <input type="number" id="register_check" name="register_check" placeholder="7 оронтой тоо" required>
             </div>
             <button type="button" class="submit-btn" id="btn_check" onclick="get_reg()">Шалгах</button>
             <form method="POST" action="" style="margin-top: 20px; display: none;" id="registerDetailsForm">
@@ -312,6 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             btn_check.classList.remove('hidden');
             $('#register_check').val('');
             $('#registerDetailsForm').hide();
+            let register_check = document.getElementById('register_check');
+            register_check.disabled = false;
         }
 
         function register_send() {
@@ -366,6 +209,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function get_reg() {
+            $.ajax({
+                url: "logtable.php",
+                type: "POST",
+                data: {
+                    turul: "check_reg",
+                    rd: $('#register_check').val(),
+                    phone: "0",
+                    action: "Checking registration number"
+                },
+                beforeSend: function() {
+
+                },
+                success: function(datatin) {
+                    console.log(datatin);
+                },
+                async: true
+            });
+
             let reg = $('#register_check').val();
             $.ajax({
                 url: "https://api.ebarimt.mn/api/info/check/getTinInfo?regNo=" + reg,
@@ -385,9 +246,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             type: "GET",
                             error: function(xhr, textStatus, errorThrown) {
                                 console.log("Алдаа гарлаа !");
+                                register_check.disabled = false;
                             },
                             beforeSend: function() {
-                                $("#table").html("Түр хүлээнэ үү ...");
+                                register_check.disabled = true;
                             },
                             success: function(datatin) {
                                 console.log(datatin);

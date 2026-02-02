@@ -20,9 +20,11 @@ if (isset($_POST['register'])) {
         $error = 'Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой!';
     } else {
         if (register($number, $name, $phone, $password)) {
+            logTable("register", $number, $phone, "Registering new user");
             //header('Location: profile-form.php');
             //exit();
         } else {
+            logTable("register", $number, $phone, "Failed to register user - duplicate");
             $status = 500;
             $error = 'Энэ утасны дугаар эсвэл тухайн компани аль хэдийн бүртгэлтэй байна!';
         }
