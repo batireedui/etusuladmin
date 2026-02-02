@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="register_check">Байгууллагын регистрийн дугаар <span class="required">*</span></label>
                 <input type="number" id="register_check" name="register_check" placeholder="3755662" required>
             </div>
-            <button type="button" class="submit-btn" id="btn_check" onclick="get_reg()">ШАЛГАХ</button>
+            <button type="button" class="submit-btn" id="btn_check" onclick="get_reg()">Шалгах</button>
             <form method="POST" action="" style="margin-top: 20px; display: none;" id="registerDetailsForm">
                 <input type="hidden" id="register_number" name="register_number" required>
 
@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="agreeTerms">Үйлчилгээний нөхцөлтэй зөвшөөрч байна</label>
                 </div>
 
-                <button type="button" name="register" class="submit-btn">Бүртгүүлэх</button>
+                <button type="button" name="register" onclick="register_send()" class="submit-btn">Бүртгүүлэх</button>
                 <button type="button" class="submit-btn" style="background: #666666" onclick="newReg()">Болих</button>
             </form>
         </div>
@@ -312,6 +312,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             btn_check.classList.remove('hidden');
             $('#register_check').val('');
             $('#registerDetailsForm').hide();
+        }
+
+        function register_send() {
+            let reg_number = $('#register_number').val();
+            let reg_name = $('#register_name').val();
+            let reg_phone = $('#register_phone').val();
+            let reg_password = $('#register_password').val();
+            let confirm_password = $('#confirm_password').val();
+            let agreeTerms = document.getElementById('agreeTerms').checked;
+            if (reg_number == '' || reg_name == '' || reg_phone == '' || reg_password == '' || confirm_password == '') {
+                alert("Бүх талбарыг бөглөнө үү!");
+                return;
+            } else if (!agreeTerms) {
+                alert("Үйлчилгээний нөхцөлтэй зөвшөөрнө үү!");
+                return;
+            } else if (reg_password.length < 6) {
+                alert("Нууц үг хамгийн багадаа 6 тэмдэгттэй байх ёстой!");
+                return;
+            } else if (reg_password !== confirm_password) {
+                alert("Нууц үг таарахгүй байна!");
+                return;
+            }
+
+            $.ajax({
+                url: "register.php",
+                type: "POST",
+                data: {
+                    register: true,
+                    register_number: reg_number,
+                    register_name: reg_name,
+                    register_phone: reg_phone,
+                    register_password: reg_password,
+                    confirm_password: confirm_password
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log("Алдаа гарлаа !");
+                },
+                beforeSend: function() {
+                    // You can add a loading indicator here
+                },
+                success: function(data) {
+                    data = JSON.parse(data);
+                    console.log(data);
+                    if (data.status == 200) {
+                        window.location.reload();
+                    } else {
+                        alert(data.msg);
+                    }
+                },
+                async: true
+            });
         }
 
         function get_reg() {
