@@ -14,37 +14,17 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['login'])) {
         // Нэвтрэх
-        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
         $password = $_POST['password'];
-        
-        if (empty($email) || empty($password)) {
-            $error = 'И-мэйл болон нууц үгээ оруулна уу!';
+
+        if (empty($phone) || empty($password)) {
+            $error = 'Утасны дугаар болон нууц үгээ оруулна уу!';
         } else {
-            if (login($email, $password)) {
+            if (login($phone, $password)) {
                 header('Location: dashboard.php');
                 exit();
             } else {
-                $error = 'И-мэйл эсвэл нууц үг буруу байна!';
-            }
-        }
-    } elseif (isset($_POST['register'])) {
-        // Бүртгүүлэх
-        $email = trim($_POST['register_email']);
-        $password = $_POST['register_password'];
-        $confirmPassword = $_POST['confirm_password'];
-        
-        if (empty($email) || empty($password) || empty($confirmPassword)) {
-            $error = 'Бүх талбарыг бөглөнө үү!';
-        } elseif ($password !== $confirmPassword) {
-            $error = 'Нууц үг таарахгүй байна!';
-        } elseif (strlen($password) < 6) {
-            $error = 'Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой!';
-        } else {
-            if (register($email, $password)) {
-                header('Location: profile-form.php');
-                exit();
-            } else {
-                $error = 'Энэ и-мэйл хаяг аль хэдийн бүртгэлтэй байна!';
+                $error = 'Утасны дугаар эсвэл нууц үг буруу байна!';
             }
         }
     }
@@ -52,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="mn">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -142,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         input[type="text"],
-        input[type="email"],
+        input[type="number"],
         input[type="password"] {
             width: 100%;
             padding: 12px 16px;
@@ -225,6 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="tabs">
@@ -240,8 +222,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="email">И-мэйл хаяг <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                    <label for="phone">Утасны дугаар <span class="required">*</span></label>
+                    <input type="number" id="phone" name="phone" placeholder="88998899" required>
                 </div>
 
                 <div class="form-group">
@@ -263,11 +245,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($error && isset($_POST['register'])): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
+            <div class="form-group">
+                <label for="register_check">Байгууллагын регистрийн дугаар <span class="required">*</span></label>
+                <input type="number" id="register_check" name="register_check" placeholder="3755662" required>
+            </div>
+            <button type="button" class="submit-btn" id="btn_check" onclick="get_reg()">ШАЛГАХ</button>
+            <form method="POST" action="" style="margin-top: 20px; display: none;" id="registerDetailsForm">
+                <input type="hidden" id="register_number" name="register_number" required>
 
-            <form method="POST" action="">
                 <div class="form-group">
-                    <label for="register_email">И-мэйл хаяг <span class="required">*</span></label>
-                    <input type="email" id="register_email" name="register_email" placeholder="example@email.com" required>
+                    <label for="register_name">Байгуулагын нэр <span class="required">*</span></label>
+                    <input type="text" id="register_name" name="register_name" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="register_phone">Утасны дугаар <span class="required">*</span></label>
+                    <input type="number" id="register_phone" name="register_phone" placeholder="88998899" required>
                 </div>
 
                 <div class="form-group">
@@ -285,11 +277,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="agreeTerms">Үйлчилгээний нөхцөлтэй зөвшөөрч байна</label>
                 </div>
 
-                <button type="submit" name="register" class="submit-btn">Бүртгүүлэх</button>
+                <button type="button" name="register" class="submit-btn">Бүртгүүлэх</button>
+                <button type="button" class="submit-btn" style="background: #666666" onclick="newReg()">Болих</button>
             </form>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         function showForm(formType) {
             const loginForm = document.getElementById('loginForm');
@@ -313,6 +306,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (isset($_POST['register'])): ?>
             showForm('register');
         <?php endif; ?>
+
+        function newReg() {
+            const btn_check = document.getElementById('btn_check');
+            btn_check.classList.remove('hidden');
+            $('#register_check').val('');
+            $('#registerDetailsForm').hide();
+        }
+
+        function get_reg() {
+            let reg = $('#register_check').val();
+            $.ajax({
+                url: "https://api.ebarimt.mn/api/info/check/getTinInfo?regNo=" + reg,
+                type: "GET",
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log("Алдаа гарлаа !");
+                    $("#btn_check").removeAttr("disabled");
+                },
+                beforeSend: function() {
+                    $("#btn_check").attr("disabled", "disabled");
+                },
+                success: function(data) {
+                    console.log(data);
+                    if (data.status == 200) {
+                        $.ajax({
+                            url: "https://api.ebarimt.mn/api/info/check/getInfo?tin=" + data.data,
+                            type: "GET",
+                            error: function(xhr, textStatus, errorThrown) {
+                                console.log("Алдаа гарлаа !");
+                            },
+                            beforeSend: function() {
+                                $("#table").html("Түр хүлээнэ үү ...");
+                            },
+                            success: function(datatin) {
+                                console.log(datatin);
+                                if (data.status == 200) {
+                                    const btn_check = document.getElementById('btn_check');
+                                    btn_check.classList.add('hidden');
+                                    $('#register_number').val(reg);
+                                    $('#register_name').val(datatin.data.name);
+                                    $("#registerDetailsForm").show();
+                                } else {
+                                    alert(data.msg);
+                                }
+                            },
+                            async: true
+                        });
+
+                    } else {
+                        alert(data.msg);
+                    }
+                    $("#btn_check").removeAttr("disabled");
+                },
+                async: true
+            });
+        }
     </script>
 </body>
+
 </html>

@@ -18,21 +18,21 @@ function requireLogin()
 }
 
 // Нэвтрэх
-function login($email, $password)
+function login($phone, $password)
 {
     $database = new Database();
     $db = $database->connect();
 
-    $query = "SELECT comid, email, password FROM company WHERE email = :email and password = :password";
+    $query = "SELECT comid, phone, password FROM company WHERE phone = :phone and password = :password";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':phone', $phone);
     $stmt->bindParam(':password', $password);
     $stmt->execute();
 
     if ($stmt->rowCount() > 0) {
         $user = $stmt->fetch();
         $_SESSION['user_id'] = $user['comid'];
-        $_SESSION['email'] = $user['email'];
+        $_SESSION['phone'] = $user['phone'];
         return true;
     }
 
@@ -40,33 +40,33 @@ function login($email, $password)
 }
 
 // Бүртгүүлэх
-function register($email, $password)
+function register($phone, $password)
 {
     $database = new Database();
     $db = $database->connect();
 
-    // И-мэйл хаяг аль хэдийн байгаа эсэхийг шалгах
-    $checkQuery = "SELECT id FROM users WHERE email = :email";
+    // Утасны дугаар аль хэдийн байгаа эсэхийг шалгах
+    $checkQuery = "SELECT id FROM company WHERE phone = :phone";
     $checkStmt = $db->prepare($checkQuery);
-    $checkStmt->bindParam(':email', $email);
+    $checkStmt->bindParam(':phone', $phone);
     $checkStmt->execute();
 
     if ($checkStmt->rowCount() > 0) {
-        return false; // И-мэйл хаяг аль хэдийн бүртгэлтэй
+        return false; // Утасны дугаар аль хэдийн бүртгэлтэй
     }
 
     // Нууц үгийг hash хийх
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    //$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Шинэ хэрэглэгч үүсгэх
-    $query = "INSERT INTO users (email, password) VALUES (:email, :password)";
+    $query = "INSERT INTO company (phone, password) VALUES (:phone, :password)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashedPassword);
+    $stmt->bindParam(':phone', $phone);
+    $stmt->bindParam(':password', $password);
 
     if ($stmt->execute()) {
         $_SESSION['user_id'] = $db->lastInsertId();
-        $_SESSION['email'] = $email;
+        $_SESSION['phone'] = $phone;
         return true;
     }
 
@@ -91,13 +91,81 @@ function getCurrentUserId()
 // Компанийн мэдээлэл байгаа эсэхийг шалгах
 function hasCompanyProfile($userId)
 {
-    $database = new Database();
+    /*$database = new Database();
     $db = $database->connect();
 
-    $query = "SELECT id FROM company WHERE user_id = :user_id";
+    $query = "SELECT comID FROM company WHERE user_id = :user_id";
     $stmt = $db->prepare($query);
     $stmt->bindParam(':user_id', $userId);
     $stmt->execute();
 
-    return $stmt->rowCount() > 0;
+    return $stmt->rowCount() > 0;*/
+    return true;
+}
+
+
+function org_get($reg)
+{
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => "https://api.ebarimt.mn/api/info/check/getTinInfo?regNo=$reg",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => [
+            "Accept: application/json"
+        ],
+    ]);
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    $response = json_decode($response);
+
+    $item = new stdClass();
+
+    if ($response->status == '200') {
+        $tin = $response->data;
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://api.ebarimt.mn/api/info/check/getInfo?tin=$tin",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Accept: application/json"
+            ],
+        ]);
+
+        $res = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+        $res = json_decode($res);
+        //print_r($res);
+        if ($res->status == '200') {
+
+            $item->status = 200;
+            $item->msg = $res->data->name;
+            $item->tin = $tin;
+            return $item;
+        } else {
+            $item->status = 500;
+            $item->msg = $res->msg;
+            return $item;
+        }
+    } else {
+        $item->status = 500;
+        $item->msg = $response->msg;
+        return $item;
+    }
 }

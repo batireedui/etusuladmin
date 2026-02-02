@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 }
 
 // Компанийн мэдээлэл татах
-$query = "SELECT * FROM company WHERE user_id = :user_id";
+$query = "SELECT * FROM company WHERE comID = :user_id";
 $stmt = $db->prepare($query);
 $stmt->bindParam(':user_id', $userId);
 $stmt->execute();
@@ -363,8 +363,8 @@ $company = $stmt->fetch();
                     <h3>Үндсэн мэдээлэл</h3>
                     <div class="info-item">
                         <span class="info-label">РД:</span>
-                        <span class="info-value"><?php echo htmlspecialchars($company['rd']); ?></span>
-                        <input type="text" name="rd" value="<?php echo htmlspecialchars($company['rd']); ?>" maxlength="7">
+                        <span class="info-value"><?php echo htmlspecialchars($company['RD']); ?></span>
+                        <input type="text" name="rd" value="<?php echo htmlspecialchars($company['RD']); ?>" maxlength="7">
                     </div>
                     <div class="info-item">
                         <span class="info-label">Компанийн нэр:</span>
@@ -423,7 +423,7 @@ $company = $stmt->fetch();
                 </div>
             </div>
         </form>
-
+         <!--   
         <div class="info-card">
             <h3>Зургууд</h3>
             <div class="company-images">
@@ -464,6 +464,7 @@ $company = $stmt->fetch();
                 </div>
             </div>
         </div>
+        -->
     </div>
 
     <script>
