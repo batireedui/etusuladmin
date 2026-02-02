@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 }
 
 // Компанийн мэдээлэл татах
-$query = "SELECT * FROM companies WHERE user_id = :user_id";
+$query = "SELECT * FROM company WHERE user_id = :user_id";
 $stmt = $db->prepare($query);
 $stmt->bindParam(':user_id', $userId);
 $stmt->execute();

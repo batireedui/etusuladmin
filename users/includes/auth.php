@@ -94,7 +94,7 @@ function hasCompanyProfile($userId)
     $database = new Database();
     $db = $database->connect();
 
-    $query = "SELECT id FROM companies WHERE user_id = :user_id";
+    $query = "SELECT id FROM company WHERE user_id = :user_id";
     $stmt = $db->prepare($query);
     $stmt->bindParam(':user_id', $userId);
     $stmt->execute();
