@@ -1,6 +1,6 @@
 <footer class="footer text-center text-muted">
-                All Rights Reserved by Adminmart. Designed and Developed by <a
-                    href="https://wrappixel.com">WrapPixel</a>.
+                 Хөгжүүлсэн <a
+                    href="#">Future Innovation LLC</a>.
             </footer>
         </div>
     </div>

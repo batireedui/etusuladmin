@@ -64,3 +64,9 @@ function _exec($sql, $types, $sqlParams, &$count)
     //$count = mysqli_stmt_affected_rows($stmt);
     return $success;
 }
+
+function redirect($url)
+{
+    header("Location: $url");
+    exit;
+}

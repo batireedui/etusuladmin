@@ -73,21 +73,7 @@
                  <div class="card">
                      <div class="card-body">
                          <div class="d-flex align-items-center mb-4">
-                             <h4 class="card-title">Top Leaders</h4>
-                             <div class="ml-auto">
-                                 <div class="dropdown sub-dropdown">
-                                     <button class="btn btn-link text-muted dropdown-toggle" type="button"
-                                         id="dd1" data-toggle="dropdown" aria-haspopup="true"
-                                         aria-expanded="false">
-                                         <i data-feather="more-vertical"></i>
-                                     </button>
-                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd1">
-                                         <a class="dropdown-item" href="#">Insert</a>
-                                         <a class="dropdown-item" href="#">Update</a>
-                                         <a class="dropdown-item" href="#">Delete</a>
-                                     </div>
-                                 </div>
-                             </div>
+                             <h4 class="card-title">Хэрэглэгчид</h4>
                          </div>
                          <div class="table-responsive">
                              <table class="table no-wrap v-middle mb-0">
