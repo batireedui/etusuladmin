@@ -1,0 +1,1 @@
+ALTER TABLE `company` ADD `dbname` VARCHAR(100) NULL AFTER `domainName`, ADD `dbpass` VARCHAR(100) NULL AFTER `dbname`, ADD `dbuser` VARCHAR(100) NULL AFTER `dbpass`, ADD `folder` VARCHAR(100) NULL AFTER `dbuser`;

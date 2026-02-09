@@ -1,8 +1,8 @@
- <?php
-    require_once 'header.php';
-    require_once 'sidebar.php';
-    $statusArr = ['paid' => 'Идэвхтэй', 'registered' => 'Бүртгүүлсэн', 'expired' => 'Хугацаа дууссан'];
-    ?>
+<?php
+require_once 'header.php';
+require_once 'sidebar.php';
+$statusArr = ['paid' => 'Идэвхтэй', 'registered' => 'Бүртгүүлсэн', 'expired' => 'Хугацаа дууссан'];
+?>
  <div class="page-wrapper">
      <!-- ============================================================== -->
      <!-- Bread crumb and right sidebar toggle -->
