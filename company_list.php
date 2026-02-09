@@ -41,15 +41,15 @@
                                 );
                                 $count = 1;
                                 while (_fetch($stmt)) { ?>
-                                 <tr>
-                                     <td>
-                                         <?php echo $count++; ?>
-                                     </td>
-                                     <td>
-                                         <?php echo $comName; ?>
-                                         <br>
-                                         <span class="font-12 text-nowrap d-block ">
-                                             <?php 
+                             <tr>
+                                 <td>
+                                     <?php echo $count++; ?>
+                                 </td>
+                                 <td>
+                                     <?php echo $comName; ?>
+                                     <br>
+                                     <span class="font-12 text-nowrap d-block ">
+                                         <?php 
                                              if ($domainName == null) {
                                                  $domainName = 'Домэйн нэр байхгүй';
                                              }
@@ -57,17 +57,21 @@
                                                  $domainName = '<a href="' . $domainName . '" target="_blank">' . $domainName . '</a>';
                                              }
                                              echo $domainName; ?>
-                                         </span>
-                                     </td>
-                                     <td><?php echo $RD; ?></td>
-                                     <td><?php echo $phone; ?></td>
-                                     <td><?php echo $ognoo; ?></td>
-                                     <td>
-                                         <span class="badge bg-<?php echo $status == 'paid' ? 'success' : ($status == 'registered' ? 'warning' : 'danger'); ?> font-12 text-white font-weight-medium badge-pill border-0"><?php echo $statusArr[$status]; ?></span>
-                                     <td class="text-center">
-                                         <button class="btn btn-sm waves-effect waves-light btn-rounded btn-primary border-0">Тохиргоо</button>
-                                     </td>
-                                 </tr>
+                                     </span>
+                                 </td>
+                                 <td><?php echo $RD; ?></td>
+                                 <td><?php echo $phone; ?></td>
+                                 <td><?php echo $ognoo; ?></td>
+                                 <td>
+                                     <span
+                                         class="badge bg-<?php echo $status == 'paid' ? 'success' : ($status == 'registered' ? 'warning' : 'danger'); ?> font-12 text-white font-weight-medium badge-pill border-0"><?php echo $statusArr[$status]; ?></span>
+                                 <td class="text-center">
+                                     <a href="settings.php?comID=<?php echo $comID; ?>">
+                                         <button
+                                             class="btn btn-sm waves-effect waves-light btn-rounded btn-primary border-0">Тохиргоо</button>
+                                     </a>
+                                 </td>
+                             </tr>
                              <?php
                                 }
                                 ?>
