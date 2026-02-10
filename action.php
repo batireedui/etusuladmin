@@ -80,6 +80,25 @@ if (isset($_SESSION['userid'])) {
 
         header('Location: settings.php?comID=' . $comID . '&info=Хүснэгт амжилттай үүслээ.');
         exit();
+    } else if (isset($_POST['folderSetup'])) {
+        $folderName = $_POST['folderName'] ?? null;
+        $comID = $_POST['comID'] ?? null;
+        if (!isset($comID)) {
+            header('Location: settings.php?comID=' . $comID . '&info=Компанийн мэдээлэл олдсонгүй.');
+            exit();
+        }
+        $query = "UPDATE company SET folder = ? WHERE comID = ?";
+        _exec(
+            $query,
+            "si",
+            [
+                $folderName,
+                $comID
+            ],
+            $count
+        );
+        header('Location: settings.php?comID=' . $comID . '&info=Хавтасны нэр амжилттай хадгалагдлаа.');
+        exit();
     } else {
         header('Location: index.php');
         exit();

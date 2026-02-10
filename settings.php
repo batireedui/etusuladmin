@@ -134,19 +134,19 @@ function folderTreeHtml($dir)
                                     <div class="col-md-6 p-2">
                                         <input type="hidden" name="comID" value="<?= $comID ?>">
                                         <label>Домэйн нэр</label>
-                                        <input type="text" value="<?= $domainName ?>" name="domainName" class="form-control">
+                                        <input type="text" value="<?= $domainName ?>" name="domainName" class="form-control" required>
                                     </div>
                                     <div class="col-md-6 p-2">
                                         <label>Өгөгдлийн сангийн нэр</label>
-                                        <input type="text" value="<?= $dbname ?>" name="dbname" class="form-control">
+                                        <input type="text" value="<?= $dbname ?>" name="dbname" class="form-control" required>
                                     </div>
                                     <div class="col-md-6 p-2">
                                         <label>Өгөгдлийн сангийн хэрэглэгчийн нэр</label>
-                                        <input type="text" value="<?= $dbuser ?>" name="dbuser" class="form-control">
+                                        <input type="text" value="<?= $dbuser ?>" name="dbuser" class="form-control" required>
                                     </div>
                                     <div class="col-md-6 p-2">
                                         <label>Өгөгдлийн сангийн нууц үг</label>
-                                        <input type="text" value="******" name="dbpass" class="form-control">
+                                        <input type="text" value="******" name="dbpass" class="form-control" required>
                                     </div>
                                     <div class="col-md-12 p-2 mt-3">
                                         <input type="submit" value="Хадгалах" name="mainData" class="btn btn-primary w-100">
@@ -226,10 +226,15 @@ function folderTreeHtml($dir)
                                 </table>
                             </div>
                             <div class="tab-pane" id="folder_tree">
-                                <div class="col-md-6 p-2">
-                                    <label>Сервер дээрх хавтас</label>
-                                    <input type="text" value="<?= $folder ?>" name="folder" class="form-control">
-                                </div>
+                                <form class="row p-3" action="action.php" method="POST">
+                                    <div class="col-md-6 p-2">
+                                        <input type="hidden" name="comID" value="<?= $comID ?>">
+                                        <input type="text" value="<?= $folder ?>" name="folderName" placeholder="Сервер дээрх хавтасны нэр" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6 p-2">
+                                        <input type="submit" value="Хадгалах" name="folderSetup" class="btn btn-primary w-100">
+                                    </div>
+                                </form>
 
                                 <?php
                                 if (isset($folder) && $folder != '') {
