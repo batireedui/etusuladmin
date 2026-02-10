@@ -1,5 +1,6 @@
 <?php
 session_start();
+define('ROOT', dirname(dirname(dirname(__FILE__))));
 require_once __DIR__ . '/../api/aaa.php';
 
 // Хэрэглэгч нэвтэрсэн эсэхийг шалгах

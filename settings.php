@@ -58,29 +58,48 @@ while (_fetch($sstt)) {
     ]);
 };
 
-
+/*
+Файлуудын хамт харуулах
 function folderTreeHtml($dir)
 {
+    if (!is_dir($dir)) return;
     echo "<ul>";
-    foreach (scandir($dir) as $item) {
-        if ($item == '.' || $item == '..') continue;
-
-        $path = $dir . '/' . $item;
+    $items = array_diff(scandir($dir), ['.', '..']);
+    foreach ($items as $item) {
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        // Давхар шалгалт
+        if (!file_exists($path)) continue;
         echo "<li>";
-
         if (is_dir($path)) {
-            echo "📁 $item";
+            echo "📁 " . htmlspecialchars($item);
             folderTreeHtml($path);
         } else {
-            echo "📄 $item";
+            echo "📄 " . htmlspecialchars($item);
         }
-
         echo "</li>";
     }
     echo "</ul>";
 }
+*/
 
-
+//Зөвхөн хавтас харуулах
+function folderTreeHtml($dir)
+{
+    if (!is_dir($dir)) return;
+    echo "<ul>";
+    foreach (array_diff(scandir($dir), ['.', '..']) as $item) {
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        // Зөвхөн folder үед л харуулна
+        if (is_dir($path)) {
+            echo "<li>";
+            echo "📁 " . htmlspecialchars($item);
+            // Recursive call
+            folderTreeHtml($path);
+            echo "</li>";
+        }
+    }
+    echo "</ul>";
+}
 ?>
 <div class="page-wrapper">
     <div class="container-fluid">
@@ -238,7 +257,7 @@ function folderTreeHtml($dir)
 
                                 <?php
                                 if (isset($folder) && $folder != '') {
-                                    $fullPath = __DIR__;
+                                    $fullPath = ROOT . '/' . $folder;
                                     if (is_dir($fullPath)) {
                                         folderTreeHtml($fullPath);
                                     } else {

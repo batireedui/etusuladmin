@@ -14,11 +14,11 @@
             <p>Танай бизнест тохирсон багцаа сонгоод идэвхжүүлээрэй</p>
         </div>
 
-        <?php if ($error): ?>
+        <?php if (!empty($error)): ?>
             <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
-        <?php if ($success): ?>
+        <?php if (!empty($success)): ?>
             <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
 
