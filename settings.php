@@ -2,6 +2,8 @@
 require_once 'header.php';
 require_once 'sidebar.php';
 $comID = $_GET['comID'] ?? null;
+$info = $_GET['info'] ?? null;
+
 if (!isset($comID) || $comID == '') {
     header('Location: index.php');
     exit();
@@ -24,7 +26,7 @@ _selectRowNoParam(
 );
 function checkDB($dbuser, $dbpass, $dbname)
 {
-    if (empty($dbuser) || empty($dbpass) || empty($dbname)) {
+    if (empty($dbuser) || empty($dbname)) {
         return false;
     }
 
@@ -37,6 +39,24 @@ function checkDB($dbuser, $dbpass, $dbname)
     $connCheck->close();
     return true;
 }
+
+_selectNoParam(
+    $sstt,
+    $cctt,
+    "SELECT id, name, query FROM table_list",
+    $staticTablesID,
+    $staticTablesName,
+    $staticTablesQuery
+);
+
+$staticTables = [];
+while (_fetch($sstt)) {
+    array_push($staticTables, [
+        'id' => $staticTablesID,
+        'name' => $staticTablesName,
+        'query' => $staticTablesQuery
+    ]);
+};
 
 
 function folderTreeHtml($dir)
@@ -68,6 +88,7 @@ function folderTreeHtml($dir)
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
+                        <h1><?= $comName ?> </h1>
                         <h4 class="card-title">Компанийн мэдээлэл тохируулах</h4>
                         <h6 class="card-subtitle mt-1">Компанийн домэйн нэр, өгөгдлийн сан, лицензийн мэдээлэл тохируулах
                         </h6>
@@ -79,6 +100,12 @@ function folderTreeHtml($dir)
                         <?php } else { ?>
                             <div class="alert alert-success" role="alert">
                                 Домэйн нэр, өгөгдлийн сангийн мэдээлэл зөв байна. Систем хэвийн ажиллах боломжтой.
+                            </div>
+                        <?php }
+
+                        if ($info !== null) { ?>
+                            <div class="alert alert-info" role="alert">
+                                <?= $info ?>
                             </div>
                         <?php } ?>
                         <ul class="nav nav-tabs mb-3">
@@ -121,14 +148,6 @@ function folderTreeHtml($dir)
                                         <label>Өгөгдлийн сангийн нууц үг</label>
                                         <input type="text" value="******" name="dbpass" class="form-control">
                                     </div>
-                                    <div class="col-md-6 p-2">
-                                        <label>Сервер дээрх хавтас</label>
-                                        <input type="text" value="<?= $folder ?>" name="folder" class="form-control">
-                                    </div>
-                                    <div class="col-md-6 p-2">
-                                        <label>Төлөв</label>
-                                        <input type="text" value="<?= $statusArr[$status] ?>" class="form-control" readonly>
-                                    </div>
                                     <div class="col-md-12 p-2 mt-3">
                                         <input type="submit" value="Хадгалах" name="mainData" class="btn btn-primary w-100">
                                     </div>
@@ -153,7 +172,12 @@ function folderTreeHtml($dir)
                                                 $tableName = $table[0];
                                                 $result = $connCheck->query("SELECT COUNT(*) AS count FROM $tableName");
                                                 $row = $result->fetch_assoc();
-                                        ?>
+
+                                                foreach ($staticTables as $staticTable) {
+                                                    if ($staticTable['name'] == $tableName) {
+                                                        unset($staticTables[array_search($staticTable, $staticTables)]);
+                                                    }
+                                                } ?>
                                                 <tr>
                                                     <td><?= $rowNum++ ?></td>
                                                     <td><?= $tableName ?></td>
@@ -172,8 +196,41 @@ function folderTreeHtml($dir)
                                         ?>
                                     </tbody>
                                 </table>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Үүсээгүй системийн хүснэгтийн нэр</th>
+                                            <th>Үйлдэл</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        foreach ($staticTables as $index => $staticTable) { ?>
+                                            <tr>
+                                                <td><?= $index + 1 ?></td>
+                                                <td><?= $staticTable['name'] ?></td>
+                                                <td>
+                                                    <form id="createTableForm_<?= $staticTable['id'] ?>" method="POST" action="action.php">
+                                                        <input type="hidden" name="comID" value="<?= $comID ?>">
+                                                        <input type="hidden" name="tableID" value="<?= $staticTable['id'] ?>">
+                                                        <input type="hidden" name="tableName" value="<?= $staticTable['name'] ?>">
+                                                        <button class="btn btn-sm btn-danger" type="submit" name="createTable">Үүсгэх</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
                             </div>
                             <div class="tab-pane" id="folder_tree">
+                                <div class="col-md-6 p-2">
+                                    <label>Сервер дээрх хавтас</label>
+                                    <input type="text" value="<?= $folder ?>" name="folder" class="form-control">
+                                </div>
+
                                 <?php
                                 if (isset($folder) && $folder != '') {
                                     $fullPath = __DIR__;
