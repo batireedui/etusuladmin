@@ -28,21 +28,24 @@ if (isLoggedIn()) {
 
     $file      = $_FILES['file'];
     $fieldName = isset($_POST['field']) ? preg_replace('/[^a-z_]/', '', $_POST['field']) : 'file';
-    // $userId  = $_SESSION['userId'] ?? 0;   // ← Таны session-аас авна
     $userId    = isset($_POST['userId']) ? (int)$_POST['userId'] : 0;
+    $folder    = isset($_POST['folder']) ? $_POST['folder'] : '0';
 
     // Upload очих хавтас — ROOT тодорхойлогдсон байх ёстой
     // Хэрэв тодорхойлогдоогүй бол энд тохируулна
     if (!defined('ROOT')) {
-        define('ROOT', dirname(__DIR__)); // ajax/ хавтасны дээр
+        define('ROOT', dirname(dirname(dirname(__FILE__)))); // ajax/ хавтасны дээр
     }
-
-    $uploadDir = ROOT . '/uploads/company_' . $userId . '/';
-
+    
     // Зөвшөөрөгдсөн төрлүүд
     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
 
     // ── Шалгалтууд ────────────────────────────────────────────
+
+    if ($folder == '0') {
+        echo json_encode(['success' => false, 'message' => 'Сервер дээрх ROOT хавтас олдсонгүй.']);
+        exit;
+    }
 
     // 1. Upload алдаа шалгах
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -73,25 +76,61 @@ if (isLoggedIn()) {
     if ($file['size'] > 5 * 1024 * 1024) {
         echo json_encode(['success' => false, 'message' => 'Файлын хэмжээ 5MB-аас хэтрэхгүй байна.']);
         exit;
-    }
-
-    // ── Хавтас үүсгэх ────────────────────────────────────────
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
+    }  
 
     // ── Файлын нэр үүсгэх ────────────────────────────────────
-    $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)); 
     $prefixes = [
         'avatar'    => 'propic',
-        'logo'      => 'logo',
-        'companyLogo' => 'logo',
+        'companyLogo' => 'companyLogo',
         'signature' => 'signature',
         'stamp'     => 'stamp',
+        'blank'     => 'blank',
+        'ztushaal'     => 'ztushaal',
     ];
     $prefix   = $prefixes[$fieldName] ?? $fieldName;
-    $newName  = $prefix . '_' . $userId . '_' . time() . '.' . $ext;
-    $destPath = $uploadDir . $newName;
+    if ($prefix == 'propic') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/company/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'avatar.jpg';
+        $newName = 'avatar.jpg';
+    } else if ($prefix == 'logo') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/company/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'companylogo.jpg';
+        $newName = 'companylogo.jpg';
+    }  else if ($prefix == 'signature') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/alban/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'sign.png';
+        $newName = 'sign.png';
+    } else if ($prefix == 'stamp') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/alban/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'tamga.png';
+        $newName = 'tamga.png';
+    } else if ($prefix == 'blank') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/alban/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'blank1.jpg';
+        $newName = 'blank1.jpg';
+    } else if ($prefix == 'ztushaal') {
+        $uploadDir = ROOT . '/' . $folder . '/dist/uploads/alban/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true); }
+        $destPath = $uploadDir . 'blank2.jpg';
+        $newName = 'blank2.jpg';
+    } else {
+        echo json_encode(['success' => false, 'message' => "Тодорхойгүй зургийн төрөл. $prefix "]);
+        exit;
+    }
+    //$newName  = $prefix . '_' . $userId . '_' . time() . '.' . $ext;
+    //$destPath = $uploadDir . $newName;
 
     // ── Файл хадгалах ─────────────────────────────────────────
     if (move_uploaded_file($file['tmp_name'], $destPath)) {

@@ -85,8 +85,14 @@ if ($payment && $payment['expiredDate']) {
     }
 }
 
-$folder = ROOT . '/' . ($company['folder'] ?? null);
-$is_dir = is_dir($folder);
+if (empty($company['folder'])) {
+    $folder = ROOT . '/' . $company['folder'];
+    $is_dir = false;
+}
+else {
+    $folder = ROOT . '/' . $company['folder'];
+    $is_dir = is_dir($folder);
+}
 
 ?>
 <!DOCTYPE html>

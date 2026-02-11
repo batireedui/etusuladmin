@@ -261,7 +261,7 @@ function folderTreeHtml($dir)
                                     if (is_dir($fullPath)) {
                                         folderTreeHtml($fullPath);
                                     } else {
-                                        echo "<div class='alert alert-warning'>Хавтас олдсонгүй.</div>";
+                                        echo "<div class='alert alert-warning'>Хавтас олдсонгүй.$fullPath</div>";
                                     }
                                 } else {
                                     echo "<div class='alert alert-warning'>Хавтас тохируулна уу.</div>";

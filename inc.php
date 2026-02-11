@@ -1,6 +1,6 @@
 <?php
 session_start();
-define('ROOT', dirname(dirname(__FILE__)));
+define('ROOT', dirname(__FILE__));
 require_once __DIR__ . '/users/api/aaa.php';
 //require_once ROOT . '/etusul.com/api/aaa.php';
 
